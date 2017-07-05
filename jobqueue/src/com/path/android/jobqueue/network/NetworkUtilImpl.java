@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.path.android.jobqueue.log.JqLog;
+
 /**
  * default implementation for network Utility to observe network events
  */
@@ -30,7 +32,12 @@ public class NetworkUtilImpl implements NetworkUtil, NetworkEventProvider {
     @Override
     public boolean isConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        NetworkInfo netInfo = null;
+        try {
+            netInfo = cm.getActiveNetworkInfo();
+        } catch (SecurityException e) {
+            JqLog.e(e, "isConnected() no permission: android.permission.ACCESS_NETWORK_STATE.");
+        }
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
